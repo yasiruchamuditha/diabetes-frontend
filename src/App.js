@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { 
     User, Brain, Activity, AlertTriangle, 
     FileText, BarChart3, Target, ChevronLeft, ChevronRight,
@@ -31,23 +31,24 @@ const App = () => {
         { id: 6, name: 'Results', icon: Target }
     ];
 
-    const updateData = (section, data) => {
+    // Use useCallback to prevent unnecessary re-renders
+    const updateData = useCallback((section, data) => {
         setAllData(prev => ({ ...prev, [section]: data }));
-    };
+    }, []);
 
-    const nextPage = () => {
+    const nextPage = useCallback(() => {
         if (currentPage < pages.length - 1) {
             setCurrentPage(prev => prev + 1);
             window.scrollTo(0, 0);
         }
-    };
+    }, [currentPage, pages.length]);
 
-    const prevPage = () => {
+    const prevPage = useCallback(() => {
         if (currentPage > 0) {
             setCurrentPage(prev => prev - 1);
             window.scrollTo(0, 0);
         }
-    };
+    }, [currentPage]);
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -150,67 +151,73 @@ const App = () => {
 };
 
 // ============================================
-// PAGE COMPONENTS
+// MEMOIZED PAGE COMPONENTS (Prevents re-renders)
 // ============================================
 
-const DemographicsPage = ({ data, onChange }) => (
-    <div className="page-card">
-        <h2>📋 Personal Information</h2>
-        <p className="subtitle">Tell us about yourself</p>
-        
-        <div className="form-group">
-            <label>Age *</label>
-            <input
-                type="number"
-                min="16"
-                max="30"
-                value={data.age || ''}
-                onChange={(e) => onChange({ ...data, age: e.target.value })}
-                placeholder="Enter your age (16-30)"
-            />
-        </div>
+const DemographicsPage = memo(({ data, onChange }) => {
+    const handleChange = useCallback((field, value) => {
+        onChange({ ...data, [field]: value });
+    }, [data, onChange]);
 
-        <div className="form-group">
-            <label>Gender *</label>
-            <div className="button-group">
-                {['male', 'female', 'other'].map(g => (
-                    <button
-                        key={g}
-                        type="button"
-                        className={`btn ${data.gender === g ? 'btn-selected' : 'btn-outline'}`}
-                        onClick={() => onChange({ ...data, gender: g })}
-                    >
-                        {g.charAt(0).toUpperCase() + g.slice(1)}
-                    </button>
-                ))}
+    return (
+        <div className="page-card">
+            <h2>📋 Personal Information</h2>
+            <p className="subtitle">Tell us about yourself</p>
+            
+            <div className="form-group">
+                <label>Age *</label>
+                <input
+                    type="number"
+                    min="16"
+                    max="30"
+                    value={data.age || ''}
+                    onChange={(e) => handleChange('age', e.target.value)}
+                    placeholder="Enter your age (16-30)"
+                />
+            </div>
+
+            <div className="form-group">
+                <label>Gender *</label>
+                <div className="button-group">
+                    {['male', 'female', 'other'].map(g => (
+                        <button
+                            key={g}
+                            type="button"
+                            className={`btn ${data.gender === g ? 'btn-selected' : 'btn-outline'}`}
+                            onClick={() => handleChange('gender', g)}
+                        >
+                            {g.charAt(0).toUpperCase() + g.slice(1)}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="form-group">
+                <label>Employment Status *</label>
+                <select value={data.employment || ''} onChange={(e) => handleChange('employment', e.target.value)}>
+                    <option value="">Select status</option>
+                    <option value="student">Student</option>
+                    <option value="employed">Employed</option>
+                    <option value="unemployed">Unemployed</option>
+                    <option value="vocational">Vocational Training</option>
+                </select>
+            </div>
+
+            <div className="form-group">
+                <label>Education Level *</label>
+                <select value={data.education || ''} onChange={(e) => handleChange('education', e.target.value)}>
+                    <option value="">Select level</option>
+                    <option value="ol">G.C.E. O/L</option>
+                    <option value="al">G.C.E. A/L</option>
+                    <option value="undergraduate">Undergraduate</option>
+                    <option value="graduate">Graduate or Above</option>
+                </select>
             </div>
         </div>
+    );
+});
 
-        <div className="form-group">
-            <label>Employment Status *</label>
-            <select value={data.employment || ''} onChange={(e) => onChange({ ...data, employment: e.target.value })}>
-                <option value="">Select status</option>
-                <option value="student">Student</option>
-                <option value="employed">Employed</option>
-                <option value="unemployed">Unemployed</option>
-                <option value="vocational">Vocational Training</option>
-            </select>
-        </div>
-
-        <div className="form-group">
-            <label>Education Level *</label>
-            <select value={data.education || ''} onChange={(e) => onChange({ ...data, education: e.target.value })}>
-                <option value="">Select level</option>
-                <option value="ol">G.C.E. O/L</option>
-                <option value="al">G.C.E. A/L</option>
-                <option value="undergraduate">Undergraduate</option>
-                <option value="graduate">Graduate or Above</option>
-            </select>
-        </div>
-    </div>
-);
-
-const StressPage = ({ data, onChange }) => {
+const StressPage = memo(({ data, onChange }) => {
     const questions = [
         "Been upset because of something unexpected?",
         "Unable to control important things?",
@@ -223,6 +230,12 @@ const StressPage = ({ data, onChange }) => {
         "Angered by things outside control?",
         "Difficulties piling up?"
     ];
+
+    const handleResponse = useCallback((questionId, value) => {
+        const newData = [...data];
+        newData[questionId] = value;
+        onChange(newData);
+    }, [data, onChange]);
 
     const calculateScore = () => {
         const reverseItems = [3, 4, 6, 7];
@@ -259,11 +272,7 @@ const StressPage = ({ data, onChange }) => {
                             <button
                                 key={val}
                                 className={`btn btn-rating ${data[idx] === val ? 'btn-selected' : 'btn-outline'}`}
-                                onClick={() => {
-                                    const newData = [...data];
-                                    newData[idx] = val;
-                                    onChange(newData);
-                                }}
+                                onClick={() => handleResponse(idx, val)}
                             >
                                 {val}
                             </button>
@@ -280,78 +289,84 @@ const StressPage = ({ data, onChange }) => {
             )}
         </div>
     );
-};
+});
 
-const LifestylePage = ({ data, onChange }) => (
-    <div className="page-card">
-        <h2>🏃 Lifestyle Habits</h2>
-        <p className="subtitle">Tell us about your daily routines</p>
+const LifestylePage = memo(({ data, onChange }) => {
+    const handleChange = useCallback((field, value) => {
+        onChange({ ...data, [field]: value });
+    }, [data, onChange]);
 
-        <div className="form-group">
-            <label>Fast food meals per week</label>
-            <input
-                type="range"
-                min="0"
-                max="7"
-                value={data.fastFood || 0}
-                onChange={(e) => onChange({ ...data, fastFood: e.target.value })}
-            />
-            <div className="range-labels">
-                <span>Never</span>
-                <span>{data.fastFood || 0} times</span>
-                <span>Daily</span>
-            </div>
-        </div>
+    return (
+        <div className="page-card">
+            <h2>🏃 Lifestyle Habits</h2>
+            <p className="subtitle">Tell us about your daily routines</p>
 
-        <div className="form-group">
-            <label>Exercise days per week</label>
-            <input
-                type="number"
-                min="0"
-                max="7"
-                value={data.exercise || ''}
-                onChange={(e) => onChange({ ...data, exercise: e.target.value })}
-                placeholder="0-7 days"
-            />
-        </div>
-
-        <div className="form-group">
-            <label>Sleep hours per night</label>
-            <input
-                type="number"
-                min="3"
-                max="12"
-                step="0.5"
-                value={data.sleep || ''}
-                onChange={(e) => onChange({ ...data, sleep: e.target.value })}
-                placeholder="Hours"
-            />
-        </div>
-
-        <div className="form-grid">
             <div className="form-group">
-                <label>Smoking</label>
-                <select value={data.smoking || ''} onChange={(e) => onChange({ ...data, smoking: e.target.value })}>
-                    <option value="">Select</option>
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
-                </select>
+                <label>Fast food meals per week</label>
+                <input
+                    type="range"
+                    min="0"
+                    max="7"
+                    value={data.fastFood || 0}
+                    onChange={(e) => handleChange('fastFood', e.target.value)}
+                />
+                <div className="range-labels">
+                    <span>Never</span>
+                    <span>{data.fastFood || 0} times</span>
+                    <span>Daily</span>
+                </div>
             </div>
 
             <div className="form-group">
-                <label>Alcohol</label>
-                <select value={data.alcohol || ''} onChange={(e) => onChange({ ...data, alcohol: e.target.value })}>
-                    <option value="">Select</option>
-                    <option value="no">No</option>
-                    <option value="occasionally">Occasionally</option>
-                    <option value="regularly">Regularly</option>
-                </select>
+                <label>Exercise days per week</label>
+                <input
+                    type="number"
+                    min="0"
+                    max="7"
+                    value={data.exercise || ''}
+                    onChange={(e) => handleChange('exercise', e.target.value)}
+                    placeholder="0-7 days"
+                />
+            </div>
+
+            <div className="form-group">
+                <label>Sleep hours per night</label>
+                <input
+                    type="number"
+                    min="3"
+                    max="12"
+                    step="0.5"
+                    value={data.sleep || ''}
+                    onChange={(e) => handleChange('sleep', e.target.value)}
+                    placeholder="Hours"
+                />
+            </div>
+
+            <div className="form-grid">
+                <div className="form-group">
+                    <label>Smoking</label>
+                    <select value={data.smoking || ''} onChange={(e) => handleChange('smoking', e.target.value)}>
+                        <option value="">Select</option>
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label>Alcohol</label>
+                    <select value={data.alcohol || ''} onChange={(e) => handleChange('alcohol', e.target.value)}>
+                        <option value="">Select</option>
+                        <option value="no">No</option>
+                        <option value="occasionally">Occasionally</option>
+                        <option value="regularly">Regularly</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+});
 
-const SymptomsPage = ({ data, onChange }) => {
+const SymptomsPage = memo(({ data, onChange }) => {
     const symptoms = [
         "Frequent urination",
         "Extreme thirst",
@@ -362,6 +377,10 @@ const SymptomsPage = ({ data, onChange }) => {
         "Numbness in hands/feet",
         "Recurring infections"
     ];
+
+    const handleChange = useCallback((key, value) => {
+        onChange({ ...data, [key]: value });
+    }, [data, onChange]);
 
     return (
         <div className="page-card">
@@ -374,7 +393,7 @@ const SymptomsPage = ({ data, onChange }) => {
                         <input
                             type="checkbox"
                             checked={data[`symptom_${idx}`] || false}
-                            onChange={(e) => onChange({ ...data, [`symptom_${idx}`]: e.target.checked })}
+                            onChange={(e) => handleChange(`symptom_${idx}`, e.target.checked)}
                         />
                         <span>{symptom}</span>
                     </label>
@@ -382,109 +401,121 @@ const SymptomsPage = ({ data, onChange }) => {
             </div>
         </div>
     );
-};
+});
 
-const MedicalHistoryPage = ({ data, onChange }) => (
-    <div className="page-card">
-        <h2>📋 Medical History</h2>
-        <p className="subtitle">Information about your health background</p>
+const MedicalHistoryPage = memo(({ data, onChange }) => {
+    const handleChange = useCallback((field, value) => {
+        onChange({ ...data, [field]: value });
+    }, [data, onChange]);
 
-        <div className="form-group">
-            <label>Family history of diabetes?</label>
-            <div className="button-group">
-                {['yes', 'no'].map(opt => (
-                    <button
-                        key={opt}
-                        className={`btn ${data.familyHistory === opt ? 'btn-selected' : 'btn-outline'}`}
-                        onClick={() => onChange({ ...data, familyHistory: opt })}
-                    >
-                        {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                    </button>
-                ))}
-            </div>
-        </div>
+    return (
+        <div className="page-card">
+            <h2>📋 Medical History</h2>
+            <p className="subtitle">Information about your health background</p>
 
-        <div className="form-group">
-            <label>Previous diabetes diagnosis?</label>
-            <select value={data.diagnosis || ''} onChange={(e) => onChange({ ...data, diagnosis: e.target.value })}>
-                <option value="">Select</option>
-                <option value="no">No</option>
-                <option value="prediabetes">Prediabetes</option>
-                <option value="type2">Type 2 Diabetes</option>
-            </select>
-        </div>
-
-        <div className="form-group">
-            <label>Hypertension (high blood pressure)?</label>
-            <div className="button-group">
-                {['yes', 'no', 'unsure'].map(opt => (
-                    <button
-                        key={opt}
-                        className={`btn ${data.hypertension === opt ? 'btn-selected' : 'btn-outline'}`}
-                        onClick={() => onChange({ ...data, hypertension: opt })}
-                    >
-                        {opt.charAt(0).toUpperCase() + opt.slice(1)}
-                    </button>
-                ))}
-            </div>
-        </div>
-    </div>
-);
-
-const MedicalDataPage = ({ data, onChange }) => (
-    <div className="page-card">
-        <h2>🩺 Medical Measurements</h2>
-        <p className="subtitle">Enter recent lab results if available (optional)</p>
-
-        <div className="form-grid">
             <div className="form-group">
-                <label>HbA1c (%)</label>
-                <input
-                    type="number"
-                    step="0.1"
-                    value={data.hba1c || ''}
-                    onChange={(e) => onChange({ ...data, hba1c: e.target.value })}
-                    placeholder="e.g., 5.7"
-                />
-                <small>Normal: &lt;5.7%</small>
+                <label>Family history of diabetes?</label>
+                <div className="button-group">
+                    {['yes', 'no'].map(opt => (
+                        <button
+                            key={opt}
+                            className={`btn ${data.familyHistory === opt ? 'btn-selected' : 'btn-outline'}`}
+                            onClick={() => handleChange('familyHistory', opt)}
+                        >
+                            {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             <div className="form-group">
-                <label>Fasting Blood Sugar (mg/dL)</label>
-                <input
-                    type="number"
-                    value={data.fbs || ''}
-                    onChange={(e) => onChange({ ...data, fbs: e.target.value })}
-                    placeholder="e.g., 95"
-                />
-                <small>Normal: &lt;100</small>
+                <label>Previous diabetes diagnosis?</label>
+                <select value={data.diagnosis || ''} onChange={(e) => handleChange('diagnosis', e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="no">No</option>
+                    <option value="prediabetes">Prediabetes</option>
+                    <option value="type2">Type 2 Diabetes</option>
+                </select>
             </div>
 
             <div className="form-group">
-                <label>Weight (kg)</label>
-                <input
-                    type="number"
-                    step="0.1"
-                    value={data.weight || ''}
-                    onChange={(e) => onChange({ ...data, weight: e.target.value })}
-                    placeholder="e.g., 65"
-                />
-            </div>
-
-            <div className="form-group">
-                <label>Height (cm)</label>
-                <input
-                    type="number"
-                    value={data.height || ''}
-                    onChange={(e) => onChange({ ...data, height: e.target.value })}
-                    placeholder="e.g., 170"
-                />
+                <label>Hypertension (high blood pressure)?</label>
+                <div className="button-group">
+                    {['yes', 'no', 'unsure'].map(opt => (
+                        <button
+                            key={opt}
+                            className={`btn ${data.hypertension === opt ? 'btn-selected' : 'btn-outline'}`}
+                            onClick={() => handleChange('hypertension', opt)}
+                        >
+                            {opt.charAt(0).toUpperCase() + opt.slice(1)}
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+});
 
-const ResultsPage = ({ result }) => {
+const MedicalDataPage = memo(({ data, onChange }) => {
+    const handleChange = useCallback((field, value) => {
+        onChange({ ...data, [field]: value });
+    }, [data, onChange]);
+
+    return (
+        <div className="page-card">
+            <h2>🩺 Medical Measurements</h2>
+            <p className="subtitle">Enter recent lab results if available (optional)</p>
+
+            <div className="form-grid">
+                <div className="form-group">
+                    <label>HbA1c (%)</label>
+                    <input
+                        type="number"
+                        step="0.1"
+                        value={data.hba1c || ''}
+                        onChange={(e) => handleChange('hba1c', e.target.value)}
+                        placeholder="e.g., 5.7"
+                    />
+                    <small>Normal: &lt;5.7%</small>
+                </div>
+
+                <div className="form-group">
+                    <label>Fasting Blood Sugar (mg/dL)</label>
+                    <input
+                        type="number"
+                        value={data.fbs || ''}
+                        onChange={(e) => handleChange('fbs', e.target.value)}
+                        placeholder="e.g., 95"
+                    />
+                    <small>Normal: &lt;100</small>
+                </div>
+
+                <div className="form-group">
+                    <label>Weight (kg)</label>
+                    <input
+                        type="number"
+                        step="0.1"
+                        value={data.weight || ''}
+                        onChange={(e) => handleChange('weight', e.target.value)}
+                        placeholder="e.g., 65"
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label>Height (cm)</label>
+                    <input
+                        type="number"
+                        value={data.height || ''}
+                        onChange={(e) => handleChange('height', e.target.value)}
+                        placeholder="e.g., 170"
+                    />
+                </div>
+            </div>
+        </div>
+    );
+});
+
+const ResultsPage = memo(({ result }) => {
     if (!result) return <div className="page-card">Loading results...</div>;
 
     const { risk_score, risk_category, shap_values, recommendations } = result;
@@ -548,6 +579,6 @@ const ResultsPage = ({ result }) => {
             </div>
         </div>
     );
-};
+});
 
 export default App;
