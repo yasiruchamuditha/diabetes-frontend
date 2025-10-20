@@ -1,102 +1,67 @@
-import axios from 'axios';
+import axios from "axios";
 
-// Get API URL from environment
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 
-// Create axios instance
 const api = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 30000, // 30 second timeout for cold starts
-    headers: {
-        'Content-Type': 'application/json',
-    }
+  baseURL: API_BASE_URL,
+  headers: { "Content-Type": "application/json" },
 });
 
-// Request interceptor
-api.interceptors.request.use(
-    config => {
-        console.log(`🌐 API Request: ${config.method.toUpperCase()} ${config.url}`);
-        return config;
-    },
-    error => {
-        console.error('❌ Request error:', error);
-        return Promise.reject(error);
-    }
-);
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-// Response interceptor with retry logic
-api.interceptors.response.use(
-    response => {
-        console.log(`✅ API Response: ${response.status}`);
-        return response;
-    },
-    async error => {
-        const originalRequest = error.config;
-        
-        // Handle timeout or 503 (cold start)
-        if ((error.code === 'ECONNABORTED' || error.response?.status === 503) 
-            && !originalRequest._retry) {
-            originalRequest._retry = true;
-            
-            console.log('⏳ Backend starting up, retrying in 5 seconds...');
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            return api.request(originalRequest);
-        }
-        
-        console.error('❌ API Error:', error.message);
-        return Promise.reject(error);
-    }
-);
+// Main prediction
+export const submitAssessment = (data) =>
+  api.post("/api/predict", data).then((r) => r.data);
 
-/**
- * Health Check
- */
-export const healthCheck = async () => {
-    try {
-        const response = await api.get('/api/health');
-        return response.data;
-    } catch (error) {
-        throw new Error('Backend is not responding');
-    }
+// SHAP + Trends
+export const getShapSummary = () =>
+  api.get("/api/shap-summary").then((r) => r.data);
+export const getRiskTrends = () =>
+  api.get("/api/trends").then((r) => r.data);
+export const getUserTrends = (token) =>
+  api.get("/api/user-trends", { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.data);
+
+// Auth
+export const registerUser = (userData) =>
+  api.post("/api/register", userData).then((r) => r.data);
+export const loginUser = (credentials) =>
+  api.post("/api/login", credentials).then((r) => r.data);
+
+
+// Add these exports to the end of services/api.js
+// PDF Report APIs
+export const downloadReportById = async (predictionId) => {
+  const token = localStorage.getItem("token");
+  const response = await api.get(`/api/report/${predictionId}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    responseType: "blob",
+  });
+  return response;
 };
 
-/**
- * Submit Assessment
- */
-export const submitAssessment = async (assessmentData) => {
-    try {
-        const response = await api.post('/api/predict', assessmentData);
-        return response.data;
-    } catch (error) {
-        if (error.message.includes('timeout')) {
-            throw new Error('Request timeout. Please try again in 10 seconds.');
-        }
-        throw new Error(error.response?.data?.error || error.message);
-    }
+export const downloadLatestReport = async () => {
+  const token = localStorage.getItem("token");
+  const response = await api.get(`/api/report/latest`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    responseType: "blob",
+  });
+  return response;
 };
 
-/**
- * Get Explanation
- */
-export const getExplanation = async (predictionId) => {
-    const response = await api.get(`/api/explain/${predictionId}`);
-    return response.data;
+export const generateReportPreview = async (predictionDoc) => {
+  const token = localStorage.getItem("token");
+  const response = await api.post(`/api/report/generate`, predictionDoc, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    responseType: "blob",
+  });
+  return response;
 };
 
-/**
- * Get Recommendations
- */
-export const getRecommendations = async (predictionId) => {
-    const response = await api.get(`/api/recommendations/${predictionId}`);
-    return response.data;
-};
 
-/**
- * Get Statistics
- */
-export const getStats = async () => {
-    const response = await api.get('/api/stats');
-    return response.data;
-};
+
 
 export default api;

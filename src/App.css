@@ -1,3 +1,4 @@
+/* src/App.css - Full with SHAP additions */
 * {
     margin: 0;
     padding: 0;
@@ -423,17 +424,37 @@ input[type="range"]::-webkit-slider-thumb {
     color: #38a169;
 }
 
-/* Progress Bar Container */
-.progress-bar-container {
+/* SHAP Bar Container */
+.shap-bar-container {
     width: 100%;
-    height: 10px;
+    height: 20px;
     background: #e2e8f0;
-    border-radius: 5px;
+    border-radius: 10px;
     overflow: hidden;
+    margin-top: 5px;
 }
 
-.progress-bar-fill {
+.shap-bar {
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.shap-bar.positive {
+    background: linear-gradient(to right, #e53e3e, #c53030);
+    justify-content: flex-end;
+    padding: 0 10px 0 0;
+}
+
+.shap-bar.negative {
+    background: linear-gradient(to left, #38a169, #2f855a);
+    justify-content: flex-start;
+    padding: 0 0 0 10px;
 }
 
 /* Recommendation Box */
