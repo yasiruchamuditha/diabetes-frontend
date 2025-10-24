@@ -1,50 +1,103 @@
-import React from "react";
+//src/pages/forms/StressPage.jsx
+import React, { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-const StressPage = ({ data, update }) => {
+const StressPage = memo(({ data, update }) => {
   const navigate = useNavigate();
 
   const questions = [
-    "Upset because of unexpected events?",
+    "Been upset because of something unexpected?",
     "Unable to control important things?",
-    "Felt nervous or stressed?",
-    "Confident about handling personal problems?",
+    "Felt nervous and stressed?",
+    "Confident handling problems?",
     "Things going your way?",
-    "Unable to cope with life irritations?",
+    "Could not cope with everything?",
+    "Control irritations?",
     "Felt on top of things?",
-    "Angry because of things outside your control?",
-    "Felt difficulties piling up?",
-    "Could not overcome challenges?",
+    "Angered by things outside control?",
+    "Difficulties piling up?"
   ];
 
+  // Update stress value for each question
+  const handleResponse = useCallback(
+    (questionId, value) => {
+      const newData = [...data];
+      newData[questionId] = value;
+      update("stress", newData);
+    },
+    [data, update]
+  );
+
+  // Calculate stress score (reverse specific items)
+  const calculateScore = () => {
+    const reverseItems = [3, 4, 6, 7]; // PSS reverse-scored items
+    let total = 0;
+    data.forEach((val, idx) => {
+      if (val !== null && val !== undefined) {
+        total += reverseItems.includes(idx) ? 4 - val : val;
+      }
+    });
+    return total;
+  };
+
+  const score = calculateScore();
+  const isComplete = data.every((r) => r !== null && r !== undefined);
+
+  const stressCategory =
+    score <= 13
+      ? "🟢 Low Stress"
+      : score <= 26
+      ? "🟡 Moderate Stress"
+      : "🔴 High Stress";
+
   return (
-    <div className="page-card">
+    <div className="page-card fade-in">
       <h2>🧠 Stress Assessment (PSS-10)</h2>
       <p className="subtitle">
-        Rate how often you’ve experienced each feeling in the last month.
+        In the last month, how often have you experienced the following?
       </p>
 
-      {questions.map((q, i) => (
-        <div key={i} className="form-group">
-          <label>{q}</label>
-          <input
-            type="range"
-            min="0"
-            max="4"
-            value={data[i] || 0}
-            onChange={(e) => {
-              const newStress = [...data];
-              newStress[i] = Number(e.target.value);
-              update("stress", newStress);
-            }}
-          />
-          <div className="range-labels">
-            <span>Never</span>
-            <span>Always</span>
+      {/* Legend */}
+      <div className="scale-legend">
+        <span>0 = Never</span>
+        <span>1 = Almost Never</span>
+        <span>2 = Sometimes</span>
+        <span>3 = Fairly Often</span>
+        <span>4 = Very Often</span>
+      </div>
+
+      {/* Question Cards */}
+      {questions.map((q, idx) => (
+        <div key={idx} className="question-box">
+          <p className="question">
+            {idx + 1}. {q}
+          </p>
+
+          <div className="button-group">
+            {[0, 1, 2, 3, 4].map((val) => (
+              <button
+                key={val}
+                className={`btn btn-rating ${
+                  data[idx] === val ? "btn-selected" : "btn-outline"
+                }`}
+                onClick={() => handleResponse(idx, val)}
+              >
+                {val}
+              </button>
+            ))}
           </div>
         </div>
       ))}
 
+      {/* Show score only when complete */}
+      {isComplete && (
+        <div className="score-box">
+          <h3>Your PSS Score: {score} / 40</h3>
+          <p>{stressCategory}</p>
+        </div>
+      )}
+
+      {/* Navigation */}
       <div className="navigation">
         <button
           className="btn btn-secondary"
@@ -62,6 +115,6 @@ const StressPage = ({ data, update }) => {
       </div>
     </div>
   );
-};
+});
 
 export default StressPage;

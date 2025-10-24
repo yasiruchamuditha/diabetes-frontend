@@ -1,3 +1,4 @@
+//src/pages/UserTrendDashboard.jsx
 import React, { useEffect, useState } from "react";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip,

@@ -1,3 +1,5 @@
+
+//src/pages/RiskTrends.jsx
 import React, { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from "recharts";
 import { getRiskTrends } from "../services/api";
