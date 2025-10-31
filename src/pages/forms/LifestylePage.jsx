@@ -190,9 +190,9 @@ const LifestylePage = ({ data, update }) => {
         </p>
         <div className="button-group">
           {[
-            "Never smoked / never used tobacco",
-            "Yes — Current smoker",
-            "Former smoker — quit",
+            "never smoked / never used tobacco",
+            "former smoker — quit",
+            "yes — current smoker",
           ].map((opt) => (
             <button
               key={opt}
