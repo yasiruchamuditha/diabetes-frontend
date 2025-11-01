@@ -297,6 +297,8 @@ import GlobalInsights from "./pages/GlobalInsights";
 import HealthReportPage from "./pages/HealthReportPage";
 import RuleDashboard from "./pages/RuleDashboard";
 import RiskTrends from "./pages/RiskTrends";
+import GamifiedGoalsPage from "./pages/GamifiedGoalsPage";
+
 
 // === Auth Pages ===
 import Login from "./pages/Login";
@@ -536,6 +538,10 @@ const App = () => {
               </PrivateRoute>
             }
           />
+          
+          <Route path="/gamified-goals" element={<GamifiedGoalsPage />} />
+
+
 
           {/* 🏠 Default Redirect */}
           <Route

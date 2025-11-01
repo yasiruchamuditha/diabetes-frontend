@@ -1449,6 +1449,16 @@ const ResultsPage = ({ result }) => {
             <FileText size={18} /> View Full Health Report (PDF)
           </button>
         </div>
+
+      <div className="mt-3">
+        <button
+          onClick={() => navigate("/gamified-goals", { state: { latestResult: result } })}
+          className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+        >
+          🎯 View Gamified Health Goals
+        </button>
+      </div>
+
       </div>
 
       {/* =========================
@@ -1544,86 +1554,108 @@ const ResultsPage = ({ result }) => {
           </>
         )}
       </div>
-          {/* =========================
-        🎯 FEATURE IMPACT GAUGES (3 in One Row - Horizontal)
-    ========================= */}
-    {Object.keys(shap_values).length > 0 && (
-      <div className="page-card">
-        <h3 className="text-xl font-semibold mb-4">🎯 Feature Impact Gauges</h3>
-        <p className="text-gray-600 text-sm mb-6">
-          These gauges show how strongly each top feature influenced your predicted diabetes risk.
-        </p>
+{/* =========================
+    🎯 FEATURE IMPACT GAUGES (Force 3 in One Row)
+========================= */}
+{Object.keys(shap_values).length > 0 && (
+  <div className="page-card">
+    <h3 className="text-xl font-semibold mb-4">🎯 Feature Impact Gauges</h3>
+    <p className="text-gray-600 text-sm mb-6">
+      These gauges show how strongly each top feature influenced your predicted diabetes risk.
+    </p>
 
-        {/* 👇 Horizontal Flex Layout for 3 Gauges */}
-        <div className="flex justify-center items-center gap-10 flex-wrap">
-          {Object.entries(shap_values)
-            .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
-            .slice(0, 3)
-            .map(([feature, value], idx) => {
-              const gaugeVal = Math.min(Math.abs(value) * 200, 100); // convert SHAP to %
-              const color = value > 0 ? "#ef4444" : "#10b981";
-              const textColor = value > 0 ? "text-red-600" : "text-green-600";
+    {/* 👇 Force 3 Gauges Side-by-Side */}
+    <div
+      className="flex flex-row justify-center items-start gap-8 w-full"
+      style={{
+        flexWrap: "nowrap",
+        overflowX: "auto",
+        padding: "10px 0",
+      }}
+    >
+      {Object.entries(shap_values)
+        .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))
+        .slice(0, 3)
+        .map(([feature, value], idx) => {
+          const gaugeVal = Math.min(Math.abs(value) * 200, 100);
+          const color = value > 0 ? "#ef4444" : "#10b981";
+          const textColor = value > 0 ? "text-red-600" : "text-green-600";
 
-              return (
+          return (
+            <div
+              key={idx}
+              className="flex flex-col items-center bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-all"
+              style={{
+                width: "240px",
+                height: "270px",
+                flex: "0 0 240px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              {/* Radial Gauge */}
+              <div
+                className="relative flex items-center justify-center"
+                style={{ width: 180, height: 180 }}
+              >
+                <RadialBarChart
+                  width={180}
+                  height={180}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius="65%"
+                  outerRadius="100%"
+                  barSize={14}
+                  data={[{ name: "impact", value: gaugeVal, fill: color }]}
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  <RadialBar
+                    minAngle={15}
+                    clockWise
+                    dataKey="value"
+                    cornerRadius={10}
+                    background
+                  />
+                </RadialBarChart>
+
+                {/* Centered Value */}
                 <div
-                  key={idx}
-                  className="relative flex flex-col items-center bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition-all"
+                  className="absolute flex flex-col items-center justify-center"
                   style={{
-                    width: "230px",
-                    height: "260px",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
                   }}
                 >
-                  {/* Radial Gauge */}
-                  <div className="relative flex items-center justify-center" style={{ width: 180, height: 180 }}>
-                    <RadialBarChart
-                      width={180}
-                      height={180}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius="65%"
-                      outerRadius="100%"
-                      barSize={14}
-                      data={[{ name: "impact", value: gaugeVal, fill: color }]}
-                      startAngle={90}
-                      endAngle={-270}
-                    >
-                      <RadialBar
-                        minAngle={15}
-                        clockWise
-                        dataKey="value"
-                        cornerRadius={10}
-                        background
-                      />
-                    </RadialBarChart>
-
-                    {/* Centered Value */}
-                    <div
-                      className="absolute flex flex-col items-center justify-center"
-                      style={{ top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}
-                    >
-                      <div className={`font-bold text-lg ${textColor}`}>{gaugeVal.toFixed(0)}%</div>
-                      <div className="text-xs text-gray-600">Impact</div>
-                    </div>
+                  <div className={`font-bold text-lg ${textColor}`}>
+                    {gaugeVal.toFixed(0)}%
                   </div>
-
-                  {/* Label Below Gauge */}
-                  <div className="text-center mt-3">
-                    <h5 className="font-semibold text-gray-800 text-sm">
-                      {feature.replace(/_/g, " ")}
-                    </h5>
-                    <p className={`text-xs mt-1 ${value > 0 ? "text-red-500" : "text-green-500"}`}>
-                      {value > 0 ? "↑ Increases Risk" : "↓ Reduces Risk"}
-                    </p>
-                  </div>
+                  <div className="text-xs text-gray-600">Impact</div>
                 </div>
-              );
-            })}
-        </div>
-      </div>
-    )}
+              </div>
+
+              {/* Label Below Gauge */}
+              <div className="text-center mt-3">
+                <h5 className="font-semibold text-gray-800 text-sm">
+                  {feature.replace(/_/g, " ")}
+                </h5>
+                <p
+                  className={`text-xs mt-1 ${
+                    value > 0 ? "text-red-500" : "text-green-500"
+                  }`}
+                >
+                  {value > 0 ? "↑ Increases Risk" : "↓ Reduces Risk"}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+    </div>
+  </div>
+)}
+
 
       {/* =========================
           📈 PERSONALIZED PROGRESS TRACKER

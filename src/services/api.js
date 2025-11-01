@@ -168,4 +168,18 @@ export const getUserHistory = async () => {
   }
 };
 
+// ===========================
+// 🎯 Gamified Health Goals (NEW)
+// ===========================
+export const getGamifiedGoals = async () => {
+  try {
+    const res = await api.get("/api/gamified-goals");
+    return res.data; // { success: true, data: {...} }
+  } catch (error) {
+    console.error("Gamified goals fetch error:", error);
+    return { success: false, error: "Failed to fetch gamified goals" };
+  }
+};
+
+
 export default api;
