@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getStoredToken, getStoredUser } from "../utils/auth";
 import {
-  AlertCircle,
   BarChart3,
   Activity,
   FileText,
@@ -89,12 +88,12 @@ const HomePage = () => {
 
             <div className="divider"></div>
 
-            <button
+            {/* <button
               onClick={() => navigate("/results")}
               className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 mt-3 rounded-lg transition"
             >
               View Detailed Report
-            </button>
+            </button> */}
           </div>
         ) : (
           <p className="text-gray-500">No previous results found.</p>

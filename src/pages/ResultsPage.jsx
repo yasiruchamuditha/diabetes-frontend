@@ -1453,11 +1453,19 @@ const ResultsPage = ({ result }) => {
       <div className="mt-3">
         <button
           onClick={() => navigate("/gamified-goals", { state: { latestResult: result } })}
-          className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+          className="inline-flex items-center gap-2 bg-green-600 text-indigo-700 px-4 py-2 rounded-lg hover:bg-green-700 transition"
         >
           🎯 View Gamified Health Goals
         </button>
       </div>
+
+          <button
+      onClick={() => navigate("/learn")}
+      className="bg-indigo-600 hover:bg-indigo-700 text-indigo-700 px-5 py-2 rounded-lg shadow-md transition-all"
+    >
+      📘 Learn More
+    </button>
+
 
       </div>
 

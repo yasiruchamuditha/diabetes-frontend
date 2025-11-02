@@ -182,4 +182,24 @@ export const getGamifiedGoals = async () => {
 };
 
 
+// ===========================
+// 🔹 Educational Learn API
+// ===========================
+export const getLearnResources = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await fetch(
+      `${process.env.REACT_APP_API_URL || "http://127.0.0.1:5001"}/api/learn`,
+      {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      }
+    );
+    return await res.json();
+  } catch (error) {
+    console.error("Learn fetch error:", error);
+    return { success: false, data: [] };
+  }
+};
+
+
 export default api;

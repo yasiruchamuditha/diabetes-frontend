@@ -308,6 +308,7 @@ import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
 import HomePage from "./pages/HomePage";
 import ResultsHistoryPage from "./pages/ResultsHistoryPage";
+import LearnPage from "./pages/LearnPage";
 
 // === API Service ===
 import { submitAssessment } from "./services/api";
@@ -540,6 +541,8 @@ const App = () => {
           />
           
           <Route path="/gamified-goals" element={<GamifiedGoalsPage />} />
+
+           <Route path="/learn" element={<LearnPage />} />
 
 
 

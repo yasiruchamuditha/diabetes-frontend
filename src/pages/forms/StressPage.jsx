@@ -1,4 +1,5 @@
 //src/pages/forms/StressPage.jsx
+import { style } from "framer-motion/client";
 import React, { memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -79,7 +80,7 @@ const StressPage = memo(({ data, update }) => {
                 key={val}
                 className={`btn btn-rating ${
                   data[idx] === val ? "btn-selected" : "btn-outline"
-                }`}
+                }`} style={{background: data[idx] === val ? "#0d6efd" : "", color: data[idx] === val ? "#fff" : "",border: data[idx] === val ? "2px solid #000" : ""}}
                 onClick={() => handleResponse(idx, val)}
               >
                 {val}
