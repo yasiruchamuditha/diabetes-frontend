@@ -78,7 +78,7 @@ const StressPage = memo(({ data, update }) => {
         {questions.map((q, idx) => (
           <div
             key={idx}
-            className="question-box border rounded-3 shadow-sm p-4  mb-4"
+            className="question-box border rounded-3 shadow-sm bg-light p-4 mb-4"
           >
             <p className="fw-semibold text-dark mb-3 fs-6">
               {idx + 1}. {q}
