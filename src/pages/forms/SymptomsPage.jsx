@@ -1,6 +1,6 @@
-//src/pages/forms/SymptomsPage.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const SymptomsPage = ({ data, update }) => {
   const navigate = useNavigate();
@@ -24,53 +24,88 @@ const SymptomsPage = ({ data, update }) => {
     update("symptoms", newData);
   };
 
+  // Count total selected symptoms
+  const selectedCount = Object.values(data).filter(Boolean).length;
+
+  // Dynamic summary message
+  const getSummary = () => {
+    if (selectedCount === 0)
+      return "✅ No symptoms reported — low immediate risk.";
+    if (selectedCount < 4)
+      return "🟡 Mild symptoms — monitor lifestyle and recheck regularly.";
+    return "🔴 Multiple symptoms — consider a medical evaluation.";
+  };
+
   return (
-    <div className="page-card fade-in">
-      <h2>⚠️ Diabetes Risk Symptoms</h2>
-      <p className="subtitle">
-        Please select any symptoms you’ve experienced in the past 3 months.
-      </p>
-
-      <div className="symptoms-grid">
-        {symptoms.map((sym, index) => (
-          <label key={index} className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={!!data[sym]}
-              onChange={() => toggleSymptom(sym)}
-            />
-            <span>{index + 1}. {sym}</span>
-          </label>
-        ))}
-      </div>
-
-      <div className="score-box">
-        <h3>Total Selected Symptoms: 
-          {Object.values(data).filter(Boolean).length}/10
-        </h3>
-        <p>
-          {Object.values(data).filter(Boolean).length === 0
-            ? "✅ No symptoms reported — low immediate risk."
-            : Object.values(data).filter(Boolean).length < 4
-            ? "🟡 Mild symptoms — monitor lifestyle and recheck regularly."
-            : "🔴 Multiple symptoms — consider a medical evaluation."}
+    <div className="container py-5 mt-5 fade-in">
+      <div className="page-card p-4 shadow-sm bg-white rounded-3">
+        {/* Header */}
+        <h2 className="fw-bold text-primary mb-2">⚠️ Diabetes Risk Symptoms</h2>
+        <p className="text-muted mb-4">
+          Please select any symptoms you’ve experienced in the past 3 months.
         </p>
-      </div>
 
-      <div className="navigation">
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate("/form/lifestyle")}
-        >
-          ← Back
-        </button>
+        {/* Symptoms Grid */}
+        <div className="row row-cols-1 row-cols-md-2 g-3">
+          {symptoms.map((sym, index) => (
+            <div key={index} className="col">
+              <div
+                className={`card h-100 border-0 shadow-sm p-3 ${
+                  data[sym] ? "bg-light border-primary" : "bg-white"
+                }`}
+                style={{
+                  transition: "all 0.3s ease",
+                  cursor: "pointer",
+                }}
+                onClick={() => toggleSymptom(sym)}
+              >
+                <div className="form-check">
+                  <input
+                    className="form-check-input me-2"
+                    type="checkbox"
+                    checked={!!data[sym]}
+                    onChange={() => toggleSymptom(sym)}
+                    id={`symptom-${index}`}
+                  />
+                  <label
+                    className="form-check-label fw-medium"
+                    htmlFor={`symptom-${index}`}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {index + 1}. {sym}
+                  </label>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
 
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate("/form/medical-history")}
-        >
-          Next →
-        </button>
+        {/* Summary / Score Box */}
+        <div className="mt-5 text-center">
+          <div className="alert alert-light border-0 shadow-sm py-3">
+            <h5 className="fw-bold mb-1">
+              Total Selected Symptoms:{" "}
+              <span className="text-primary">{selectedCount}</span> / 10
+            </h5>
+            <p className="text-muted mb-0">{getSummary()}</p>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <div className="d-flex justify-content-between mt-4">
+          <button
+            className="btn btn-outline-secondary px-4"
+            onClick={() => navigate("/form/lifestyle")}
+          >
+            ← Back
+          </button>
+          <button
+            className="btn btn-primary px-4"
+            onClick={() => navigate("/form/medical-history")}
+          >
+            Next →
+          </button>
+        </div>
       </div>
     </div>
   );
