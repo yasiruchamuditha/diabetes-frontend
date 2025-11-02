@@ -42,10 +42,10 @@ const ResultsHistoryPage = () => {
   return (
     <div className="container py-5 mt-5 fade-in">
       <div className="text-center mb-5">
-        <h2 className="fw-bold text-primary mb-2">
+        <h2 className="fw-bold text-light mb-2">
           📜 Your Past Diabetes Risk Assessments
         </h2>
-        <p className="text-muted">
+        <p className="text-muted ">
           Review your previous prediction results and track progress over time.
         </p>
       </div>
