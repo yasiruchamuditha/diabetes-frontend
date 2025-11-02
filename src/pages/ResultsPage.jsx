@@ -1805,7 +1805,7 @@ const ResultsPage = ({ result }) => {
           <div className="mt-6 text-right">
             <button
               onClick={submitFeedback}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-all"
+              className="bg-blue-600 hover:bg-blue-700 text-indigo-700 px-5 py-2 rounded-lg transition-all"
             >
               Submit Feedback
             </button>
