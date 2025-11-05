@@ -1,70 +1,84 @@
-# Getting Started with Create React App
+# Diacare Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Diacare-frontend is the React single-page application for the Diacare project — a diabetes self-care and insights dashboard. It provides user intake forms, risk calculations, trend visualizations, and basic reporting connected to the Diacare backend API.
 
-## Available Scripts
+## Key features
 
-In the project directory, you can run:
+- User registration and login
+- Multi-step forms (demographics, lifestyle, medical history, symptoms, stress)
+- Risk and results pages with visualizations
+- Health reports and trend dashboards
 
-### `npm start`
+## Tech stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- React (created with Create React App)
+- JavaScript (ES6+)
+- CSS (plain CSS files in `src/`)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Repository structure (important files)
 
-### `npm test`
+- `public/` — static HTML, manifest and public assets
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- `src/` — application source code
+  - `App.js`, `index.js` — app entry
+  - `pages/` — route pages and form components
+  - `services/api.js` — API helper functions
+  - `utils/auth.js` — auth helpers
 
-### `npm run build`
+## Prerequisites
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Node.js v14+ and npm installed on your machine.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Local setup
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Install dependencies
 
-### `npm run eject`
+ ```powershell
+ npm install
+ ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Create a `.env` file at the project root (see notes below) and set any required environment variables.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Run the development server
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+ ```powershell
+ npm start
+ ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## Environment variables
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+This project may use environment variables prefixed with `REACT_APP_`. Common values:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- `REACT_APP_API_URL` — URL of the backend API (e.g. `http://localhost:8000/api`)
 
-### Code Splitting
+Do not commit `.env` files — they are ignored by the repository `.gitignore`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Available scripts
 
-### Analyzing the Bundle Size
+- `npm start` — start dev server
+- `npm test` — run tests (if present)
+- `npm run build` — build production bundle into `build/`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Notes for contributors
 
-### Making a Progressive Web App
+- Follow existing code style in `src/`. Keep components small and focused.
+- If you add new environment variables, document them here.
+- Open a pull request and include a short description of changes and any setup steps.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Troubleshooting
 
-### Advanced Configuration
+- If the app fails to start, remove `node_modules` and reinstall: `rm -r node_modules; npm install` (on PowerShell use `rm -r node_modules; npm install`).
+- Check `REACT_APP_API_URL` when API calls fail.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## License
 
-### Deployment
+Specify project license here (e.g., MIT) or consult repository owner.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+If you want, I can:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Add a short development checklist (lint, tests) or
+- Commit this README to the repo and open a PR.

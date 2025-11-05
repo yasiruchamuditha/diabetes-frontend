@@ -1294,7 +1294,7 @@
 
 
 
-// src/pages/ResultsPage.jsx //0b1
+// src/pages/ResultsPage.jsx //0b1//working code for 03/11
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -1486,11 +1486,11 @@ const ResultsPage = ({ result }) => {
 
             {/* Feature importance chart */}
             <div className="mb-8">
-              <h4 className="text-lg font-semibold mb-3">📊 Feature Importance (Overall Impact)</h4>
-              <ResponsiveContainer width="100%" height={300}>
+              <h4 className="text-lg font-semibold mb-5">📊 Feature Importance (Overall Impact)</h4>
+              <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={importanceData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" interval={0} angle={-35} textAnchor="end" height={70} />
+                  <XAxis dataKey="name" interval={0} angle={-35} textAnchor="end" height={80} />
                   <YAxis />
                   <Tooltip formatter={(val) => `${val.toFixed(4)} (abs. SHAP)`} />
                   <defs>
@@ -1505,9 +1505,9 @@ const ResultsPage = ({ result }) => {
             </div>
 
             {/* Directional SHAP chart */}
-            <div className="mb-6">
+            <div className="mb-6" style={{ marginTop: "50px" }}>
               <h4 className="text-lg font-semibold mb-3">⚖️ SHAP Impact (Increase vs Decrease)</h4>
-              <ResponsiveContainer width="100%" height={350}>
+              <ResponsiveContainer width="100%" height={400}>
                 <BarChart layout="vertical" data={directionalData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" tickFormatter={(v) => v.toFixed(2)} />
