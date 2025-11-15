@@ -74,7 +74,7 @@ Do not commit `.env` files — they are ignored by the repository `.gitignore`.
 
 ## License
 
-Specify project license here (e.g., MIT) or consult repository owner.
+<!-- Specify project license here ( MIT) or consult repository owner.-->
 
 ---
 
