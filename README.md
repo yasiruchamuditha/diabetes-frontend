@@ -74,11 +74,10 @@ Do not commit `.env` files — they are ignored by the repository `.gitignore`.
 
 ## License
 
-<!-- Specify project license here ( MIT) or consult repository owner.-->
+<!-- Specify project license here ( MIT) or consult repository owner.
 
----
 
 If you want, I can:
 
 - Add a short development checklist (lint, tests) or
-- Commit this README to the repo and open a PR.
+- Commit this README to the repo and open a PR. -->
