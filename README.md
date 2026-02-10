@@ -1,6 +1,6 @@
 # Diacare Frontend
 
-Diacare-frontend is the React single-page application for the Diacare project — a diabetes self-care and insights dashboard. It provides user intake forms, risk calculations, trend visualizations, and basic reporting connected to the Diacare backend API.
+Diacare-frontend is the application for the Diacare project — a diabetes self-care and insights dashboard. It provides user intake forms, risk calculations, trend visualizations, and basic reporting connected to the Diacare backend API.
 
 ## Key features
 
